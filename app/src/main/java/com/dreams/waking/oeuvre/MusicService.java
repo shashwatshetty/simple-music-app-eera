@@ -37,15 +37,16 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
         return bindMusic;
+        //return null;
     }
 
     /** Method performs tasks when unbinding: MusicService to MainActivity **/
-    @Override
+    /*@Override
     public boolean onUnbind(Intent intent){
         mediaPlayer.stop();
         mediaPlayer.release();
         return false;
-    }
+    }*/
 
     /** Method to handle playing a specific song from the ListView **/
     public void playSong(){

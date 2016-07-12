@@ -19,7 +19,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
 
     private ArrayList<Song> listOfSongs;
     private MusicService musicService;
-    private Intent serviceIntent;
+    private Intent serviceIntent, playIntent;
     private int currentSongPosition;
     private static MusicController musicController;
     private Handler musicHandler = new Handler();
@@ -46,6 +46,19 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
         setController();
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        Log.i("PlayActivity","Inside onPause()");
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        unbindService(connectMusic);
+        Log.i("PlayActivity","Inside onStop()");
+    }
+
     /** Method of the Activity class **/
     @Override
     //handles termination of the app
@@ -59,7 +72,6 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     @Override
     //handles functions of just starting the app
     protected void onStart(){
-        super.onStart();
         Log.i("PlayActivity","Inside onStart()");
         Log.i("PlayActivity","Inside serviceConnectionThread run()");
         connectMusic = new ServiceConnection() {
@@ -86,6 +98,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
             bindService(serviceIntent, connectMusic, Context.BIND_AUTO_CREATE);
             startService(serviceIntent);
         }
+        super.onStart();
     }
 
     /** Method of the MediaController.MediaPlayerControl class **/

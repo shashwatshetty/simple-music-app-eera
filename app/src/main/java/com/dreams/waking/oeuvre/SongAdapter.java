@@ -20,11 +20,15 @@ public class SongAdapter extends BaseAdapter {
     private ArrayList<Song> songList;
     private LayoutInflater songInfo;
 
-    public SongAdapter(Context context, ArrayList<Song> songList){
+    public SongAdapter(Context context, ArrayList<Song> songArrayList){
         //Log.i("SongAdapter","Inside SongAdapter()");
-        this.songList = songList;
+        this.setSongList(songArrayList);
         songInfo = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //Log.i("SongAdapter","songList size is: "+this.songList.size());
+    }
+
+    public void setSongList(ArrayList<Song> songList) {
+        this.songList = songList;
     }
 
     /** BaseAdapter method to return the size of the ListView **/

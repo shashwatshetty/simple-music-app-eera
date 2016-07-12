@@ -20,6 +20,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
     private ArrayList<Song> songList;
     private ListView songView;
+    SongAdapter songAdapter;
     public static final String SONG_POSITION = "Current Song Position";
 
     /** Method of the Activity class **/
@@ -34,9 +35,9 @@ public class MainActivity extends AppCompatActivity{
         //extracting the songList populated in the SplashActivity
         songList = getIntent().getParcelableArrayListExtra(SplashActivity.SONG_LIST);
         //binding the adapter to the songList to render details of the songs on the screen
-        SongAdapter adapter = new SongAdapter(this, songList);
+        songAdapter = new SongAdapter(this, songList);
         //setting the adapter for the ListView
-        songView.setAdapter(adapter);
+        songView.setAdapter(songAdapter);
     }
 
     /** Method of the Activity class **/
@@ -55,6 +56,18 @@ public class MainActivity extends AppCompatActivity{
         magImage.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
         searchView.setSearchableInfo(searchableInfo);
         return true;
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        Log.i("MainActivity","Inside onPause()");
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        Log.i("MainActivity","Inside onStop()");
     }
 
     /** Method of the Activity class **/

@@ -32,6 +32,9 @@ public class SearchActivity extends AppCompatActivity implements MediaController
     private MusicService musicService;
     private Intent playIntent;
     private static MusicController musicController;
+    ListView searchResultView;
+    private TextView noResultsFound;
+    SongAdapter songAdapter;
     private Handler musicHandler = new Handler();
     private boolean musicBound = false;
 
@@ -43,17 +46,8 @@ public class SearchActivity extends AppCompatActivity implements MediaController
         setContentView(R.layout.activity_search);
         Intent searchIntent = getIntent();
         manageSearchIntent(searchIntent);
-        if (searchResultList.isEmpty()) {
-            TextView noResultsFound = (TextView)findViewById(R.id.no_results_found);
-            noResultsFound.setText("No Results Found!!");
-        }
-        else{
-            ListView searchResultView = (ListView) findViewById(R.id.search_result);
-            SongAdapter songAdapter = new SongAdapter(this,searchResultList);
-            searchResultView.setAdapter(songAdapter);
-            //initialising the media player controls
-            setController();
-        }
+        songAdapter = new SongAdapter(this, searchResultList);
+        displaySearchResults();
     }
 
     /** Method of the Activity class **/
@@ -79,6 +73,8 @@ public class SearchActivity extends AppCompatActivity implements MediaController
         Log.i("SearchActivity", "Inside onNewIntent");
         setIntent(intent);
         manageSearchIntent(intent);
+        songAdapter.setSongList(searchResultList);
+        displaySearchResults();
     }
 
     private void manageSearchIntent(Intent intent) {
@@ -252,6 +248,24 @@ public class SearchActivity extends AppCompatActivity implements MediaController
         playerIntent.putExtra(MainActivity.SONG_POSITION, songToPlay);
         playerIntent.putExtra(SplashActivity.SONG_LIST, searchResultList);
         startActivity(playerIntent);
+    }
+
+    /** Method to display the Search results **/
+    public void displaySearchResults(){
+        if (searchResultList.isEmpty()) {
+            noResultsFound = (TextView)findViewById(R.id.no_results_found);
+            noResultsFound.setText("No Results Found!!");
+        }
+        else{
+            noResultsFound.setText("");
+            //retrieve the ListView from the layout file
+            searchResultView = (ListView) findViewById(R.id.search_result);
+            //initialise the Adapter and set it to the ListView
+            searchResultView.setAdapter(songAdapter);
+            //initialising the media player controls
+            setController();
+        }
+        songAdapter.setSongList(searchResultList);
     }
 
     /** Method to retrieve the lis of songs from the internal storage **/
