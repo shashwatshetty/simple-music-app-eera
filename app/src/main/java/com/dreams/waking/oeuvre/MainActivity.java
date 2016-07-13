@@ -22,11 +22,13 @@ public class MainActivity extends AppCompatActivity{
     private ListView songView;
     SongAdapter songAdapter;
     public static final String SONG_POSITION = "Current Song Position";
+    private static final String NAME_OF_ACTIVITY = "MainActivity";
 
     /** Method of the Activity class **/
     @Override
     //handles the creation function of the app
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(NAME_OF_ACTIVITY, "Inside onCreate()");
         super.onCreate(savedInstanceState);
         //instantiate the main activity layout
         setContentView(R.layout.activity_main);
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     //handles menu buttons
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i(NAME_OF_ACTIVITY,"Inside onCreateOptionsMenu()");
         MenuInflater inflater = getMenuInflater();
         //instantiating the menu layout to the menu inflater
         inflater.inflate(R.menu.menu_main, menu);
@@ -61,13 +64,13 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onPause(){
         super.onPause();
-        Log.i("MainActivity","Inside onPause()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onPause()");
     }
 
     @Override
     protected void onStop(){
         super.onStop();
-        Log.i("MainActivity","Inside onStop()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onStop()");
     }
 
     /** Method of the Activity class **/
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity{
     //handles termination of the app
     protected void onDestroy(){
         super.onDestroy();
-        Log.i("MainActivity","Inside onDestroy()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
     }
 
     /** Method of the Activity class **/
@@ -83,7 +86,13 @@ public class MainActivity extends AppCompatActivity{
     //handles functions of just starting the app
     protected void onStart(){
         super.onStart();
-        Log.i("MainActivity","Inside onStart");
+        Log.i(NAME_OF_ACTIVITY,"Inside onStart");
+    }
+
+    @Override
+    protected void onResume(){
+        Log.i(NAME_OF_ACTIVITY, "Inside onResume()");
+        super.onResume();
     }
 
     /** Method to handle ListView onClick events for the songs **/

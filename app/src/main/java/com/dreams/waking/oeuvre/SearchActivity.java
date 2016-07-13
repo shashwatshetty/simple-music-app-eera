@@ -37,11 +37,12 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
     SongAdapter songAdapter;
     private Handler musicHandler = new Handler();
     private boolean musicBound = false;
+    private static final String NAME_OF_ACTIVITY = "SearchActivity";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.i(NAME_OF_ACTIVITY,"Inside onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Intent searchIntent = getIntent();
@@ -54,6 +55,7 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
     @Override
     //handles menu buttons
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i(NAME_OF_ACTIVITY,"Inside onCreateOptionsMenu()");
         MenuInflater inflater = getMenuInflater();
         //instantiating the menu layout to the menu inflater
         inflater.inflate(R.menu.menu_main, menu);
@@ -70,7 +72,7 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.i("SearchActivity", "Inside onNewIntent");
+        Log.i(NAME_OF_ACTIVITY, "Inside onNewIntent");
         setIntent(intent);
         manageSearchIntent(intent);
         songAdapter.setSongList(searchResultList);
@@ -88,9 +90,10 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
     @Override
     //handles termination of the app
     protected void onDestroy(){
-        stopService(playIntent);
+        //stopService(playIntent);
         //getApplicationContext().unbindService(connectMusic);
-        musicService = null;
+        //musicService = null;
+        Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
         super.onDestroy();
     }
 
@@ -98,12 +101,31 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
     @Override
     //handles functions of just starting the app
     protected void onStart(){
+        Log.i(NAME_OF_ACTIVITY,"Inside onStart()");
         super.onStart();
         /*if (playIntent == null){
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, connectMusic, Context.BIND_AUTO_CREATE);
             startService(playIntent);
         }*/
+    }
+
+    @Override
+    protected void onResume(){
+        Log.i(NAME_OF_ACTIVITY,"Inside onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop(){
+        Log.i(NAME_OF_ACTIVITY,"Inside onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause(){
+        Log.i(NAME_OF_ACTIVITY,"Inside onPause()");
+        super.onPause();
     }
 
 //    /** Method of the MediaController.MediaPlayerControl class **/

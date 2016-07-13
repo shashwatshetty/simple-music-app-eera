@@ -26,10 +26,11 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     private boolean musicBound = false;
     /** Initialising the service connection with the service class **/
     private ServiceConnection connectMusic;
+    private static final String NAME_OF_ACTIVITY = "PlayActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("PlayActivity", "Inside onCreate()");
+        Log.i(NAME_OF_ACTIVITY, "Inside onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         //retrieve the list of songs from the intent extras
@@ -49,29 +50,30 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     @Override
     protected void onPause(){
         super.onPause();
-        Log.i("PlayActivity","Inside onPause()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onPause()");
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        Log.i("PlayActivity","Inside onPause()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onResume()");
     }
 
     @Override
     protected void onStop(){
         super.onStop();
         //unbindService(connectMusic);
-        Log.i("PlayActivity","Inside onResume()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onResume()");
     }
+
 
     /** Method of the Activity class **/
     @Override
     //handles termination of the app
     protected void onDestroy(){
         //getApplicationContext().unbindService(connectMusic);
-        musicService = null;
-        Log.i("PlayActivity","Inside onDestroy()");
+        //musicService = null;
+        Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
         super.onDestroy();
     }
 
@@ -79,7 +81,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     @Override
     //handles functions of just starting the app
     protected void onStart(){
-        Log.i("PlayActivity","Inside onStart()");
+        Log.i(NAME_OF_ACTIVITY,"Inside onStart()");
         connectMusic = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
