@@ -27,7 +27,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends AppCompatActivity implements MediaController.MediaPlayerControl{
+public class SearchActivity extends AppCompatActivity /*implements MediaController.MediaPlayerControl*/{
     private ArrayList<Song> searchResultList;
     private MusicService musicService;
     private Intent playIntent;
@@ -99,147 +99,147 @@ public class SearchActivity extends AppCompatActivity implements MediaController
     //handles functions of just starting the app
     protected void onStart(){
         super.onStart();
-        if (playIntent == null){
+        /*if (playIntent == null){
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, connectMusic, Context.BIND_AUTO_CREATE);
             startService(playIntent);
-        }
+        }*/
     }
 
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    //handles the start button
-    public void start() {
-        //Log.i("MediaControl","start()");
-        musicService.startPlay();
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public void pause() {
-        //Log.i("MediaControl","pause()");
-        musicService.pausePlay();
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public int getDuration() {
-        if (musicService != null && musicBound){
-            return musicService.getSongDuration();
-        }
-        return 0;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public int getCurrentPosition() {
-        if (musicService != null && musicBound){
-            return musicService.getSongPosition();
-        }
-        return 0;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public void seekTo(int pos) {
-        musicService.seekPlay(pos);
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public boolean isPlaying() {
-        if (musicService != null && musicBound){
-            return musicService.isSongPlaying();
-        }
-        return false;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public int getBufferPercentage() {
-        //return musicService.getBufferPercent();
-        return 0;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public boolean canPause(){
-        return true;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
-
-    /** Method of the MediaController.MediaPlayerControl class **/
-    private void setController(){
-        musicController = new MusicController(this);
-        //to handle previous & next button onClick events
-        musicController.setPrevNextListeners(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                playNext();
-            }
-        }, new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                playPrevious();
-            }
-        });
-        musicController.setMediaPlayer(this);
-        //setting the ListView of songs as the amchor view for the MediaPlayerClontrol
-        musicController.setAnchorView(findViewById(R.id.songs_list));
-        musicHandler.post(new Runnable() {
-            public void run(){
-                musicController.setEnabled(true);
-                //musicController.show();
-            }
-        });
-        //musicController.setEnabled(true);
-        boolean showing = musicController.isShowing();
-        //Log.i("Controls",""+showing);
-    }
-
-    /** Method to handle MediaPlayerControl Previous button **/
-    private void playPrevious(){
-        musicService.playPrevious();
-    }
-
-    /** Method to handle MediaPlayerControl Next button **/
-    private void playNext(){
-        musicService.playNext();
-    }
-
-    /** Initialising the service connection with the service class **/
-    private ServiceConnection connectMusic = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i("SearchActivity","Service Connected");
-            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
-            musicService = binder.getService();
-            musicService.setSongList(searchResultList);
-            musicBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            musicBound = false;
-        }
-    };
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    //handles the start button
+//    public void start() {
+//        //Log.i("MediaControl","start()");
+//        musicService.startPlay();
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public void pause() {
+//        //Log.i("MediaControl","pause()");
+//        musicService.pausePlay();
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public int getDuration() {
+//        if (musicService != null && musicBound){
+//            return musicService.getSongDuration();
+//        }
+//        return 0;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public int getCurrentPosition() {
+//        if (musicService != null && musicBound){
+//            return musicService.getSongPosition();
+//        }
+//        return 0;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public void seekTo(int pos) {
+//        musicService.seekPlay(pos);
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public boolean isPlaying() {
+//        if (musicService != null && musicBound){
+//            return musicService.isSongPlaying();
+//        }
+//        return false;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public int getBufferPercentage() {
+//        //return musicService.getBufferPercent();
+//        return 0;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public boolean canPause(){
+//        return true;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public boolean canSeekBackward() {
+//        return true;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public boolean canSeekForward() {
+//        return true;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    @Override
+//    public int getAudioSessionId() {
+//        return 0;
+//    }
+//
+//    /** Method of the MediaController.MediaPlayerControl class **/
+//    private void setController(){
+//        musicController = new MusicController(this);
+//        //to handle previous & next button onClick events
+//        musicController.setPrevNextListeners(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v){
+//                playNext();
+//            }
+//        }, new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v){
+//                playPrevious();
+//            }
+//        });
+//        musicController.setMediaPlayer(this);
+//        //setting the ListView of songs as the amchor view for the MediaPlayerClontrol
+//        musicController.setAnchorView(findViewById(R.id.songs_list));
+//        musicHandler.post(new Runnable() {
+//            public void run(){
+//                musicController.setEnabled(true);
+//                //musicController.show();
+//            }
+//        });
+//        //musicController.setEnabled(true);
+//        boolean showing = musicController.isShowing();
+//        //Log.i("Controls",""+showing);
+//    }
+//
+//    /** Method to handle MediaPlayerControl Previous button **/
+//    private void playPrevious(){
+//        musicService.playPrevious();
+//    }
+//
+//    /** Method to handle MediaPlayerControl Next button **/
+//    private void playNext(){
+//        musicService.playNext();
+//    }
+//
+//    /** Initialising the service connection with the service class **/
+//    private ServiceConnection connectMusic = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            Log.i("SearchActivity","Service Connected");
+//            MusicService.MusicBinder binder = (MusicService.MusicBinder)service;
+//            musicService = binder.getService();
+//            musicService.setSongList(searchResultList);
+//            musicBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            musicBound = false;
+//        }
+//    };
 
     /** Method to handle ListView onClick events for the songs **/
     public void songPicked(View view){
@@ -252,8 +252,8 @@ public class SearchActivity extends AppCompatActivity implements MediaController
 
     /** Method to display the Search results **/
     public void displaySearchResults(){
+        noResultsFound = (TextView)findViewById(R.id.no_results_found);
         if (searchResultList.isEmpty()) {
-            noResultsFound = (TextView)findViewById(R.id.no_results_found);
             noResultsFound.setText("No Results Found!!");
         }
         else{
@@ -263,7 +263,7 @@ public class SearchActivity extends AppCompatActivity implements MediaController
             //initialise the Adapter and set it to the ListView
             searchResultView.setAdapter(songAdapter);
             //initialising the media player controls
-            setController();
+            //setController();
         }
         songAdapter.setSongList(searchResultList);
     }

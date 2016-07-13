@@ -41,12 +41,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     /** Method performs tasks when unbinding: MusicService to MainActivity **/
-    /*@Override
+    @Override
     public boolean onUnbind(Intent intent){
-        mediaPlayer.stop();
-        mediaPlayer.release();
+        /*mediaPlayer.stop();
+        mediaPlayer.release();*/
         return false;
-    }*/
+    }
 
     /** Method to handle playing a specific song from the ListView **/
     public void playSong(){
@@ -96,6 +96,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             isOnShuffle = true;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        //playSong();
+        return START_NOT_STICKY;
+    }
+
     /** Method used to initialize the MediaPLayer **/
     public void initMusicPlayer(){
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -132,7 +138,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mp.start();
         musicController.show(0);
         //creating a notification which will take me back to the MainActivity of the app
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, PlayActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder notificationBuilder = new Notification.Builder(this);

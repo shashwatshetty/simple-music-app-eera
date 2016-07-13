@@ -33,7 +33,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         //retrieve the list of songs from the intent extras
-        listOfSongs = (ArrayList<Song>)getIntent().getSerializableExtra(SplashActivity.SONG_LIST);
+        listOfSongs = getIntent().getParcelableArrayListExtra(SplashActivity.SONG_LIST);
         //retrieve the current song position from the intent extras
         currentSongPosition = getIntent().getIntExtra(MainActivity.SONG_POSITION,0);
         //set the name of the current song
@@ -53,10 +53,16 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        Log.i("PlayActivity","Inside onPause()");
+    }
+
+    @Override
     protected void onStop(){
         super.onStop();
-        unbindService(connectMusic);
-        Log.i("PlayActivity","Inside onStop()");
+        //unbindService(connectMusic);
+        Log.i("PlayActivity","Inside onResume()");
     }
 
     /** Method of the Activity class **/
@@ -65,6 +71,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     protected void onDestroy(){
         //getApplicationContext().unbindService(connectMusic);
         musicService = null;
+        Log.i("PlayActivity","Inside onDestroy()");
         super.onDestroy();
     }
 
@@ -73,7 +80,6 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     //handles functions of just starting the app
     protected void onStart(){
         Log.i("PlayActivity","Inside onStart()");
-        Log.i("PlayActivity","Inside serviceConnectionThread run()");
         connectMusic = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -95,8 +101,8 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
         };
         if (serviceIntent == null){
             serviceIntent = new Intent(this, MusicService.class);
-            bindService(serviceIntent, connectMusic, Context.BIND_AUTO_CREATE);
             startService(serviceIntent);
+            bindService(serviceIntent, connectMusic, Context.BIND_AUTO_CREATE);
         }
         super.onStart();
     }
