@@ -35,6 +35,7 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
         setContentView(R.layout.activity_play);
         //retrieve the list of songs from the intent extras
         listOfSongs = getIntent().getParcelableArrayListExtra(SplashActivity.SONG_LIST);
+        Log.i(NAME_OF_ACTIVITY,"List Size: "+listOfSongs.size());
         //retrieve the current song position from the intent extras
         currentSongPosition = getIntent().getIntExtra(MainActivity.SONG_POSITION,0);
         //set the name of the current song
@@ -71,7 +72,10 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     @Override
     //handles termination of the app
     protected void onDestroy(){
-        //getApplicationContext().unbindService(connectMusic);
+        if (musicBound) {
+            unbindService(connectMusic);
+            musicBound=false;
+        }
         //musicService = null;
         Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
         super.onDestroy();

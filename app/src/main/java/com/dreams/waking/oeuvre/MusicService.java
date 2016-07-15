@@ -139,6 +139,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         musicController.show(0);
         //creating a notification which will take me back to the MainActivity of the app
         Intent notificationIntent = new Intent(this, PlayActivity.class);
+        notificationIntent.putExtra(SplashActivity.SONG_LIST,songList);
+        notificationIntent.putExtra(MainActivity.SONG_POSITION,songPosition);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder notificationBuilder = new Notification.Builder(this);
