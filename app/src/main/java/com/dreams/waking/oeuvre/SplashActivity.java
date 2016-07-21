@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class SplashActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback{
 
     private ArrayList<Song> songList;
+    private SongRetriever songRetriever;
     private static final int SPLASH_TIME_OUT = 1500;
     private static final int READ_EXTERNAL_STORAGE_CODE = 100;
     private static final String TAG = "SplashActivity";
@@ -27,8 +28,6 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        //initialise the song array list
-        songList = new ArrayList<Song>();
         //requesting runtime permissions from Android M
         if(requestRuntimePermission())
             startMainActivity();
@@ -60,32 +59,12 @@ public class SplashActivity extends Activity implements ActivityCompat.OnRequest
     }
 
 
-    /** Method to retrieve the lis of songs from the internal storage **/
+    /** Method to retrieve the list of songs from the internal storage **/
     public void getSongList(){
-        //Log.i("MainActivity", "Inside getSongList()");
-        //ContentResolver to interact with the audio content provider
-        ContentResolver musicResolver = getContentResolver();
-        //building the uri where the audio files will be searched for in the storage
-        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        //allowing read/write access to the specified location in the uri to retrieve audio files
-        Cursor musicCursor = musicResolver.query(musicUri, null, "IS_MUSIC != 0", null, "TITLE");
-        //case when music files are found
-        if (musicCursor != null && musicCursor.moveToFirst()){
-            //retrieving media column indexes for the required data fields of the audio files
-            int idIndex = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int titleIndex = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int artistIndex = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            //creating song instances and populating the songList array
-            do{
-                long songId = musicCursor.getLong(idIndex);
-                String songTitle = musicCursor.getString(titleIndex);
-                String songArtist = musicCursor.getString(artistIndex);
-                //set appropriate name to unknown artist
-                if (songArtist.equalsIgnoreCase("<unknown>"))
-                    songArtist = "Unknown Artist";
-                songList.add(new Song(songId, songTitle, songArtist));
-            }while(musicCursor.moveToNext());
-        }
+        //create object of SongRetriever to get all songs
+        songRetriever = SongRetriever.getSongRetrieverInstance(getContentResolver());
+        songRetriever.retrieveSongs();
+        songList = songRetriever.getAllSongs();
     }
 
     private void startMainActivity(){

@@ -72,10 +72,11 @@ public class PlayActivity extends AppCompatActivity implements MediaController.M
     @Override
     //handles termination of the app
     protected void onDestroy(){
-        if (musicBound) {
+        /*if (musicBound) {
+            musicService.onDestroy();
             unbindService(connectMusic);
             musicBound=false;
-        }
+        }*/
         //musicService = null;
         Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
         super.onDestroy();

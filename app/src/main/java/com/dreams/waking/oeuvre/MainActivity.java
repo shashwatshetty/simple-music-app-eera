@@ -20,7 +20,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
     private ArrayList<Song> songList;
     private ListView songView;
-    SongAdapter songAdapter;
+    private SongAdapter songAdapter;
+    private SongRetriever songRetriever;
     public static final String SONG_POSITION = "Current Song Position";
     private static final String NAME_OF_ACTIVITY = "MainActivity";
 

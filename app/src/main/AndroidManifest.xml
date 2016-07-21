@@ -36,7 +36,8 @@
         <activity
             android:name=".SearchActivity"
             android:parentActivityName=".MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -46,8 +47,12 @@
                 android:resource="@xml/searchable"
                 android:value=".SearchActivity" />
         </activity>
-        <activity android:name=".PlayActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".PlayActivity"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

@@ -23,6 +23,7 @@ import java.util.Random;
 public class MusicService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener{
 
     private MediaPlayer mediaPlayer;
+    private SongRetriever songRetriever;
     private MusicController musicController;
     private ArrayList<Song> songList;
     private int songPosition;
@@ -31,6 +32,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private boolean isOnShuffle = false;
     private final static int NOTIFICATION_ID = 1;
     private final IBinder bindMusic = new MusicBinder();
+
+    private static final String TAG = "MusicService";
 
     /** Method performs tasks when binding: MusicService to MainActivity **/
     @Override
@@ -45,7 +48,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public boolean onUnbind(Intent intent){
         /*mediaPlayer.stop();
         mediaPlayer.release();*/
-        return false;
+        stopForeground(true);
+        return true;
     }
 
     /** Method to handle playing a specific song from the ListView **/
@@ -62,7 +66,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             mediaPlayer.setDataSource(getApplicationContext(), songUri);
         }
         catch(Exception e){
-            Log.e("MusicService.class", "Error in Data Source Settings", e);
+            Log.e(TAG, "Error in Data Source Settings", e);
         }
         //inherent call to prepare()
         mediaPlayer.prepareAsync();
@@ -71,11 +75,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     /** Method of Service class that handles tasks on creation **/
     @Override
     public void onCreate(){
-        Log.i("MusicService", "Service Started");
+        Log.i(TAG, "Service Started");
         super.onCreate();
         songPosition = 0;
         randomize = new Random();
-        mediaPlayer = new MediaPlayer();
+        songRetriever = SongRetriever.getSongRetrieverInstance(getContentResolver());
+        songRetriever.retrieveSongs();
+        songList = songRetriever.getAllSongs();
         initMusicPlayer();
     }
 
@@ -83,9 +89,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public void onDestroy(){
         //musicController.
-        if(mediaPlayer != null)
+        Log.i(TAG, "Inside onDestroy()");
+        /*if(mediaPlayer != null)
             mediaPlayer.release();
-        stopForeground(true);
+        stopForeground(true);*/
     }
 
     /** Method that sets the shuffle flag **/
@@ -104,11 +111,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     /** Method used to initialize the MediaPLayer **/
     public void initMusicPlayer(){
-        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setOnPreparedListener(this);
-        mediaPlayer.setOnCompletionListener(this);
-        mediaPlayer.setOnErrorListener(this);
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnCompletionListener(this);
+            mediaPlayer.setOnErrorListener(this);
+        }
+        else{
+            mediaPlayer.reset();
+        }
     }
 
     /** Method used to initialize the songList **/
@@ -133,7 +146,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     public void onPrepared(MediaPlayer mp){
-        Log.i("Service Class","onPrepared()");
+        Log.i(TAG,"onPrepared()");
         //starts the playback of the song
         mp.start();
         musicController.show(0);
@@ -182,7 +195,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     /** Method that handles media control's play button **/
     public void startPlay(){
-        Log.i("Service Class","startPlay()");
+        Log.i(TAG,"startPlay()");
         mediaPlayer.start();
     }
 
@@ -209,7 +222,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 songPosition = 0;
             }
         }
-        playSong();
     }
 
     public void setMusicController(MusicController controller){
