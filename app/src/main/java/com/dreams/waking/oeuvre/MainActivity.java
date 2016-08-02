@@ -23,13 +23,13 @@ public class MainActivity extends AppCompatActivity{
     private SongAdapter songAdapter;
     private SongRetriever songRetriever;
     public static final String SONG_POSITION = "Current Song Position";
-    private static final String NAME_OF_ACTIVITY = "MainActivity";
+    public static final String CURRENT_SONG = "Current Song Object";
+    private static final String TAG = "MainActivity";
 
     /** Method of the Activity class **/
     @Override
     //handles the creation function of the app
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(NAME_OF_ACTIVITY, "Inside onCreate()");
         super.onCreate(savedInstanceState);
         //instantiate the main activity layout
         setContentView(R.layout.activity_main);
@@ -47,13 +47,15 @@ public class MainActivity extends AppCompatActivity{
     @Override
     //handles menu buttons
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(NAME_OF_ACTIVITY,"Inside onCreateOptionsMenu()");
         MenuInflater inflater = getMenuInflater();
         //instantiating the menu layout to the menu inflater
         inflater.inflate(R.menu.menu_main, menu);
+        //get the SearchManager instance from system services
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        //retrieve the SearchView from the menu bar
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        //code to remove the magnifying icon from the SearchView
         searchView.setIconifiedByDefault(false);
         int magId = this.getResources().getIdentifier("search_mag_icon", "id", "android");
         ImageView magImage = (ImageView) searchView.findViewById(magId);
@@ -62,46 +64,17 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
-        Log.i(NAME_OF_ACTIVITY,"Inside onPause()");
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        Log.i(NAME_OF_ACTIVITY,"Inside onStop()");
-    }
-
-    /** Method of the Activity class **/
-    @Override
-    //handles termination of the app
-    protected void onDestroy(){
-        super.onDestroy();
-        Log.i(NAME_OF_ACTIVITY,"Inside onDestroy()");
-    }
-
-    /** Method of the Activity class **/
-    @Override
-    //handles functions of just starting the app
-    protected void onStart(){
-        super.onStart();
-        Log.i(NAME_OF_ACTIVITY,"Inside onStart");
-    }
-
-    @Override
-    protected void onResume(){
-        Log.i(NAME_OF_ACTIVITY, "Inside onResume()");
-        super.onResume();
-    }
-
     /** Method to handle ListView onClick events for the songs **/
     public void songPicked(View view){
-        int songToPlay = Integer.parseInt(view.getTag().toString());
+        //retrieve the song position from the view tag
+        int songPosition = Integer.parseInt(view.getTag().toString());
+        //using the song position, retrieve song to be played
+        Song songToPlay = songList.get(songPosition);
+        //create intent and add the necessary data as extra
         Intent playerIntent = new Intent(MainActivity.this, PlayActivity.class);
-        playerIntent.putExtra(SONG_POSITION, songToPlay);
-        playerIntent.putExtra(SplashActivity.SONG_LIST, songList);
+        playerIntent.putExtra(SONG_POSITION, songPosition);
+        playerIntent.putExtra(CURRENT_SONG, songToPlay);
+        //start the intent
         startActivity(playerIntent);
     }
 }

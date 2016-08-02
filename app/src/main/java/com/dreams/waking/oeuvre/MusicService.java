@@ -55,6 +55,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     /** Method to handle playing a specific song from the ListView **/
     public void playSong(){
         mediaPlayer.reset();
+        songPosition = PlayActivity.getCurrentSongPosition();
         //retrieving the song and its details
         Song songToPlay = songList.get(songPosition);
         songTitle = songToPlay.getTitle();
@@ -77,7 +78,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public void onCreate(){
         Log.i(TAG, "Service Started");
         super.onCreate();
-        songPosition = 0;
         randomize = new Random();
         songRetriever = SongRetriever.getSongRetrieverInstance(getContentResolver());
         songRetriever.retrieveSongs();
@@ -89,10 +89,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public void onDestroy(){
         //musicController.
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        mediaPlayer.release();
         Log.i(TAG, "Inside onDestroy()");
-        /*if(mediaPlayer != null)
-            mediaPlayer.release();
-        stopForeground(true);*/
+        stopForeground(true);
     }
 
     /** Method that sets the shuffle flag **/
@@ -105,7 +107,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        //playSong();
+        playSong();
         return START_NOT_STICKY;
     }
 
@@ -149,7 +151,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         Log.i(TAG,"onPrepared()");
         //starts the playback of the song
         mp.start();
-        musicController.show(0);
+        /*musicController.show(0);
         //creating a notification which will take me back to the MainActivity of the app
         Intent notificationIntent = new Intent(this, PlayActivity.class);
         notificationIntent.putExtra(SplashActivity.SONG_LIST,songList);
@@ -160,7 +162,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         //setting the contents in the notification
         notificationBuilder.setContentIntent(pendingIntent).setSmallIcon(R.drawable.end).setTicker(songTitle).setOngoing(true).setContentTitle("Playing").setContentText(songTitle);
         Notification notification = notificationBuilder.build();
-        startForeground(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);*/
     }
 
     /** Setter for songPosition **/
@@ -210,6 +212,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     /** Method that handles control's playNext button **/
     public void playNext(){
+        Log.i(TAG, "Inside playNext()");
         if (isOnShuffle){
             int newSongPosition = songPosition;
             while (newSongPosition == songPosition){
@@ -222,6 +225,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 songPosition = 0;
             }
         }
+        playSong();
     }
 
     public void setMusicController(MusicController controller){
