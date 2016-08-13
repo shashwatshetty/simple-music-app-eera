@@ -66,13 +66,10 @@ public class MainActivity extends AppCompatActivity{
 
     /** Method to handle ListView onClick events for the songs **/
     public void songPicked(View view){
-        //retrieve the song position from the view tag
-        int songPosition = Integer.parseInt(view.getTag().toString());
         //using the song position, retrieve song to be played
-        Song songToPlay = songList.get(songPosition);
+        Song songToPlay = songList.get(Integer.parseInt(view.getTag().toString()));
         //create intent and add the necessary data as extra
         Intent playerIntent = new Intent(MainActivity.this, PlayActivity.class);
-        playerIntent.putExtra(SONG_POSITION, songPosition);
         playerIntent.putExtra(CURRENT_SONG, songToPlay);
         //start the intent
         startActivity(playerIntent);

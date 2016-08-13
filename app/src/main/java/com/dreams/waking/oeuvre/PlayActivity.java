@@ -10,16 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class PlayActivity extends AppCompatActivity /*implements MediaController.MediaPlayerControl*/{
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener/* MediaController.MediaPlayerControl*/{
 
-    private Song currentSong;
+    private static Song currentSong;
     private Intent serviceIntent;
-    private static int currentSongPosition;
     private Handler musicHandler = new Handler();
     private boolean musicBound = false;
     private static final String NAME_OF_ACTIVITY = "PlayActivity";
@@ -29,6 +29,8 @@ public class PlayActivity extends AppCompatActivity /*implements MediaController
     /** Initialising the service connection with the service class **/
     private ServiceConnection connectMusic;
 
+    private ImageButton playButton, pauseButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(NAME_OF_ACTIVITY, "Inside onCreate()");
@@ -36,8 +38,6 @@ public class PlayActivity extends AppCompatActivity /*implements MediaController
         setContentView(R.layout.activity_play);
         //retrieve the list of songs from the intent extras
         currentSong = getIntent().getParcelableExtra(MainActivity.CURRENT_SONG);
-        //retrieve the current song position from the intent extras
-        currentSongPosition = getIntent().getIntExtra(MainActivity.SONG_POSITION,0);
         //set the name of the current song
         TextView currentSongTitle = (TextView)findViewById(R.id.song_name);
         currentSongTitle.setText(currentSong.getTitle());
@@ -45,6 +45,10 @@ public class PlayActivity extends AppCompatActivity /*implements MediaController
         TextView currentSongArtist = (TextView)findViewById(R.id.song_artist_name);
         currentSongArtist.setText(currentSong.getArtist());
         //initialise the media controls
+        playButton = (ImageButton)findViewById(R.id.btnPlay);
+        pauseButton = (ImageButton)findViewById(R.id.btnPause);
+        playButton.setOnClickListener(this);
+        pauseButton.setOnClickListener(this);
         //setController();
     }
 
@@ -74,16 +78,31 @@ public class PlayActivity extends AppCompatActivity /*implements MediaController
         };*/
         if (serviceIntent == null){
             //initialise the service intent
-            serviceIntent = new Intent(this, MusicService.class);
+            serviceIntent = new Intent(getApplicationContext(), MusicService.class);
             //create and start the service
+            serviceIntent.setAction(MusicService.ACTION_START);
             startService(serviceIntent);
-            //bindService(serviceIntent, connectMusic, Context.BIND_AUTO_CREATE);
         }
         super.onStart();
     }
 
-    public static int getCurrentSongPosition() {
-        return currentSongPosition;
+    public static Song getCurrentSong() {
+        return currentSong;
+    }
+
+    @Override
+    public void onClick(View button) {
+        if(button == playButton){
+            Log.i(NAME_OF_ACTIVITY, "Inside onClick play");
+            //myIntent = new Intent(getApplicationContext(), MyService.class);
+            serviceIntent.setAction(MusicService.ACTION_PLAY);
+            startService(serviceIntent);
+        }
+        else if(button == pauseButton){
+            Log.i(NAME_OF_ACTIVITY, "Inside onClick pause");
+            serviceIntent.setAction(MusicService.ACTION_PAUSE);
+            startService(serviceIntent);
+        }
     }
 
     //    /** Method of the MediaController.MediaPlayerControl class **/

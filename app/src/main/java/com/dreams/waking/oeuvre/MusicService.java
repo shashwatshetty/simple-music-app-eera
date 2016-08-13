@@ -33,6 +33,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private final static int NOTIFICATION_ID = 1;
     private final IBinder bindMusic = new MusicBinder();
 
+    public static final String ACTION_START = "Start Music";
+    public static final String ACTION_PLAY = "Play Music";
+    public static final String ACTION_PAUSE = "Pause Music";
+    public static final String ACTION_NEXT = "Play Next";
+    public static final String ACTION_PREVIOUS = "Play Previous";
     private static final String TAG = "MusicService";
 
     /** Method performs tasks when binding: MusicService to MainActivity **/
@@ -55,10 +60,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     /** Method to handle playing a specific song from the ListView **/
     public void playSong(){
         mediaPlayer.reset();
-        songPosition = PlayActivity.getCurrentSongPosition();
         //retrieving the song and its details
-        Song songToPlay = songList.get(songPosition);
-        songTitle = songToPlay.getTitle();
+        Song songToPlay = PlayActivity.getCurrentSong();
+        //songTitle = songToPlay.getTitle();
         long songToPlayId = songToPlay.getId();
         //location of the specified song in the storage
         Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songToPlayId);
@@ -107,7 +111,25 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        playSong();
+        String intentAction = intent.getAction();
+        switch(intentAction){
+            case ACTION_START:
+                playSong();
+                break;
+            case ACTION_PLAY:
+                if(!isSongPlaying()){
+                    startPlay();
+                }
+                break;
+            case ACTION_PAUSE:
+                if(isSongPlaying()) {
+                    pausePlay();
+                }
+                break;
+            case ACTION_NEXT:
+                playNext();
+                break;
+        }
         return START_NOT_STICKY;
     }
 

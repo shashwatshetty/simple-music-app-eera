@@ -27,16 +27,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends AppCompatActivity /*implements MediaController.MediaPlayerControl*/{
+public class SearchActivity extends AppCompatActivity{
     private ArrayList<Song> searchResultList;
-    private MusicService musicService;
-    private Intent playIntent;
-    private static MusicController musicController;
     ListView searchResultView;
     private TextView noResultsFound;
     SongAdapter songAdapter;
-    private Handler musicHandler = new Handler();
-    private boolean musicBound = false;
+    public static final String CURRENT_SONG = "Current Song Object";
     private static final String NAME_OF_ACTIVITY = "SearchActivity";
 
 
@@ -44,10 +40,15 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(NAME_OF_ACTIVITY,"Inside onCreate()");
         super.onCreate(savedInstanceState);
+        //instantiate the search activity layout
         setContentView(R.layout.activity_search);
+        //retrieve search intent
         Intent searchIntent = getIntent();
+        //method call to handle the search intent query
         manageSearchIntent(searchIntent);
+        //binding the adapter to the songList to render details of the songs on the screen
         songAdapter = new SongAdapter(this, searchResultList);
+        //method call to handle displaying the search results
         displaySearchResults();
     }
 
@@ -59,9 +60,12 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
         MenuInflater inflater = getMenuInflater();
         //instantiating the menu layout to the menu inflater
         inflater.inflate(R.menu.menu_main, menu);
+        //get the SearchManager instance from system services
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        //retrieve the SearchView from the menu bar
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        //code to remove the magnifying icon from the SearchView
         searchView.setIconifiedByDefault(false);
         int magId = this.getResources().getIdentifier("search_mag_icon", "id", "android");
         ImageView magImage = (ImageView) searchView.findViewById(magId);
@@ -70,10 +74,13 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
         return true;
     }
 
+    /** Method of Activity class **/
     @Override
+    //handles the search to  be directed to the same activity
     protected void onNewIntent(Intent intent) {
-        Log.i(NAME_OF_ACTIVITY, "Inside onNewIntent");
+        //new search intent is set
         setIntent(intent);
+        //method call to handle the search intent query
         manageSearchIntent(intent);
         songAdapter.setSongList(searchResultList);
         displaySearchResults();
@@ -130,10 +137,12 @@ public class SearchActivity extends AppCompatActivity /*implements MediaControll
 
     /** Method to handle ListView onClick events for the songs **/
     public void songPicked(View view){
-        int songToPlay = Integer.parseInt(view.getTag().toString());
+        //using the song position, retrieve song to be played
+        Song songToPlay = searchResultList.get(Integer.parseInt(view.getTag().toString()));
+        //create intent and add the necessary data as extra
         Intent playerIntent = new Intent(SearchActivity.this, PlayActivity.class);
-        playerIntent.putExtra(MainActivity.SONG_POSITION, songToPlay);
-        playerIntent.putExtra(SplashActivity.SONG_LIST, searchResultList);
+        playerIntent.putExtra(CURRENT_SONG, songToPlay);
+        //start the intent
         startActivity(playerIntent);
     }
 
