@@ -60,6 +60,15 @@
             android:paddingRight="5dp">
             <!-- Previous Button -->
             <ImageButton
+                android:id="@+id/btnPrevious"
+                android:src="@drawable/prev_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@null"/>
+            <!-- Play Button -->
+            <ImageButton
                 android:id="@+id/btnPlay"
                 android:src="@drawable/play_btn"
                 android:layout_width="wrap_content"
@@ -67,10 +76,19 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:background="@null"/>
-            <!-- Backward Button -->
+            <!-- Pause Button -->
             <ImageButton
                 android:id="@+id/btnPause"
                 android:src="@drawable/pause_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@null"/>
+            <!-- Next Button -->
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:src="@drawable/next_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"

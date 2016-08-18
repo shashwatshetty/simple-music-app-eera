@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public class SongRetriever {
     private ContentResolver contentResolver;
-    private static ArrayList<Song> allSongs;
+    private static ArrayList<Song> allSongs, allSearchSongs;
     private static SongRetriever singleInstance;
 
     private SongRetriever(ContentResolver cResolver){
@@ -51,11 +52,13 @@ public class SongRetriever {
         }
     }
 
+    /** Method to retrieve the lis of songs from the internal storage **/
     public void retrieveSongs(String[] argument){
+        allSearchSongs = new ArrayList<Song>();
         //building the uri where the audio files will be searched for in the storage
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         //allowing read/write access to the specified location in the uri to retrieve audio files
-        Cursor musicCursor = contentResolver.query(musicUri, null, "IS_MUSIC != 0", argument, "TITLE");
+        Cursor musicCursor = contentResolver.query(musicUri, null, "IS_MUSIC != 0 AND TITLE LIKE ?", argument, "TITLE");
         //case when music files are found
         if (musicCursor != null && musicCursor.moveToFirst()){
             //retrieving media column indexes for the required data fields of the audio files
@@ -70,12 +73,16 @@ public class SongRetriever {
                 //set appropriate name to unknown artist
                 if (songArtist.equalsIgnoreCase("<unknown>"))
                     songArtist = "Unknown Artist";
-                allSongs.add(new Song(songId, songTitle, songArtist));
+                allSearchSongs.add(new Song(songId, songTitle, songArtist));
             }while(musicCursor.moveToNext());
         }
     }
 
     public ArrayList<Song> getAllSongs() {
         return allSongs;
+    }
+
+    public ArrayList<Song> getAllSearchSongs() {
+        return allSearchSongs;
     }
 }

@@ -21,9 +21,8 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<Song> songList;
     private ListView songView;
     private SongAdapter songAdapter;
-    private SongRetriever songRetriever;
-    public static final String SONG_POSITION = "Current Song Position";
-    public static final String CURRENT_SONG = "Current Song Object";
+    private static final String SONG_LIST = "Song List";
+    private static final String CURRENT_SONG_POSITION = "Current Song Position";
     private static final String TAG = "MainActivity";
 
     /** Method of the Activity class **/
@@ -67,10 +66,12 @@ public class MainActivity extends AppCompatActivity{
     /** Method to handle ListView onClick events for the songs **/
     public void songPicked(View view){
         //using the song position, retrieve song to be played
-        Song songToPlay = songList.get(Integer.parseInt(view.getTag().toString()));
+        int songPosition = Integer.parseInt(view.getTag().toString());
         //create intent and add the necessary data as extra
         Intent playerIntent = new Intent(MainActivity.this, PlayActivity.class);
-        playerIntent.putExtra(CURRENT_SONG, songToPlay);
+        //pack the song position & the song list
+        playerIntent.putExtra(CURRENT_SONG_POSITION, songPosition);
+        playerIntent.putParcelableArrayListExtra(SONG_LIST, songList);
         //start the intent
         startActivity(playerIntent);
     }

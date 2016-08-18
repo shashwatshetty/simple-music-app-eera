@@ -12,6 +12,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -24,37 +25,57 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private MediaPlayer mediaPlayer;
     private SongRetriever songRetriever;
-    private MusicController musicController;
     private ArrayList<Song> songList;
     private int songPosition;
     private Random randomize;
     private String songTitle = "";
     private boolean isOnShuffle = false;
     private final static int NOTIFICATION_ID = 1;
-    private final IBinder bindMusic = new MusicBinder();
 
     public static final String ACTION_START = "Start Music";
     public static final String ACTION_PLAY = "Play Music";
     public static final String ACTION_PAUSE = "Pause Music";
-    public static final String ACTION_NEXT = "Play Next";
-    public static final String ACTION_PREVIOUS = "Play Previous";
     private static final String TAG = "MusicService";
 
     /** Method performs tasks when binding: MusicService to MainActivity **/
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
-        return bindMusic;
-        //return null;
+        return null;
     }
 
-    /** Method performs tasks when unbinding: MusicService to MainActivity **/
+
+    /** Method of Service class that handles tasks on creation **/
     @Override
-    public boolean onUnbind(Intent intent){
-        /*mediaPlayer.stop();
-        mediaPlayer.release();*/
-        stopForeground(true);
-        return true;
+    public void onCreate(){
+        Log.i(TAG, "Service Started");
+        super.onCreate();
+        randomize = new Random();
+        songRetriever = SongRetriever.getSongRetrieverInstance(getContentResolver());
+        songRetriever.retrieveSongs();
+        songList = songRetriever.getAllSongs();
+        initMusicPlayer();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        String intentAction = intent.getAction();
+        switch(intentAction){
+            case ACTION_START:
+                playSong();
+                break;
+            case ACTION_PLAY:
+                if(!isSongPlaying()){
+                    startPlay();
+                }
+                break;
+            case ACTION_PAUSE:
+                if(isSongPlaying()) {
+                    pausePlay();
+                }
+                break;
+        }
+        return START_NOT_STICKY;
     }
 
     /** Method to handle playing a specific song from the ListView **/
@@ -77,28 +98,16 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mediaPlayer.prepareAsync();
     }
 
-    /** Method of Service class that handles tasks on creation **/
-    @Override
-    public void onCreate(){
-        Log.i(TAG, "Service Started");
-        super.onCreate();
-        randomize = new Random();
-        songRetriever = SongRetriever.getSongRetrieverInstance(getContentResolver());
-        songRetriever.retrieveSongs();
-        songList = songRetriever.getAllSongs();
-        initMusicPlayer();
-    }
-
     /** Method of Service class that handles tasks on destruction **/
     @Override
     public void onDestroy(){
         //musicController.
-        if(mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
-        mediaPlayer.release();
-        Log.i(TAG, "Inside onDestroy()");
-        stopForeground(true);
+//        if(mediaPlayer.isPlaying()) {
+//            mediaPlayer.stop();
+//        }
+//        mediaPlayer.release();
+//        Log.i(TAG, "Inside onDestroy()");
+//        stopForeground(true);
     }
 
     /** Method that sets the shuffle flag **/
@@ -109,33 +118,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             isOnShuffle = true;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-        String intentAction = intent.getAction();
-        switch(intentAction){
-            case ACTION_START:
-                playSong();
-                break;
-            case ACTION_PLAY:
-                if(!isSongPlaying()){
-                    startPlay();
-                }
-                break;
-            case ACTION_PAUSE:
-                if(isSongPlaying()) {
-                    pausePlay();
-                }
-                break;
-            case ACTION_NEXT:
-                playNext();
-                break;
-        }
-        return START_NOT_STICKY;
-    }
-
     /** Method used to initialize the MediaPLayer **/
     public void initMusicPlayer(){
         if (mediaPlayer == null) {
+            Log.i(TAG, "Inside initMusicPlayer()");
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -161,8 +147,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     /** Method of MediaPlayer.OnCompletionListener **/
     public void onCompletion(MediaPlayer mp){
+        Log.i(TAG, "Inside onCompletion()");
         //when song is completed, the next song is played
-        playNext();
+        Intent broadcastIntent = new Intent(PlayActivity.BROADCAST_FILTER);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
     public boolean onError(MediaPlayer mp, int what, int extra){
@@ -187,6 +175,22 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         startForeground(NOTIFICATION_ID, notification);*/
     }
 
+    /** Method that handles media control's pause button **/
+    public void pausePlay(){
+        mediaPlayer.pause();
+    }
+
+    /** Method that handles media control's play button **/
+    public void startPlay(){
+//        Log.i(TAG,"startPlay()");
+        mediaPlayer.start();
+    }
+
+    /** Method to check if song is playing or no **/
+    public boolean isSongPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
     /** Setter for songPosition **/
     public void setSong(int songIndex){
         songPosition = songIndex;
@@ -202,55 +206,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         return mediaPlayer.getDuration();
     }
 
-    /** Method to check if song is playing or no **/
-    public boolean isSongPlaying(){
-        return mediaPlayer.isPlaying();
-    }
-
-    /** Method that handles media control's pause button **/
-    public void pausePlay(){
-        mediaPlayer.pause();
-    }
-
     /** Method that handles media control's seekBar **/
     public void seekPlay(int seekPosition){
         mediaPlayer.seekTo(seekPosition);
-    }
-
-    /** Method that handles media control's play button **/
-    public void startPlay(){
-        Log.i(TAG,"startPlay()");
-        mediaPlayer.start();
-    }
-
-    /** Method that handles control's playPrevious button **/
-    public void  playPrevious(){
-        songPosition--;
-        if (songPosition < 0){
-            songPosition = songList.size() - 1;
-        }
-        playSong();
-    }
-
-    /** Method that handles control's playNext button **/
-    public void playNext(){
-        Log.i(TAG, "Inside playNext()");
-        if (isOnShuffle){
-            int newSongPosition = songPosition;
-            while (newSongPosition == songPosition){
-                newSongPosition = randomize.nextInt(songList.size());
-            }
-        }
-        else{
-            songPosition++;
-            if (songPosition >= songList.size()){
-                songPosition = 0;
-            }
-        }
-        playSong();
-    }
-
-    public void setMusicController(MusicController controller){
-        musicController = controller;
     }
 }
