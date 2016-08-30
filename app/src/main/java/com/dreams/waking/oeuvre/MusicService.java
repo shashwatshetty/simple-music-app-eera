@@ -35,7 +35,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public static final String ACTION_START = "Start Music";
     public static final String ACTION_PLAY = "Play Music";
     public static final String ACTION_PAUSE = "Pause Music";
+    public static final String ACTION_SEEK_BAR = "Seek Button";
+    public static final String ACTION_SEEK_TO = "Seek Bar Progress";
     private static final String TAG = "MusicService";
+    private static final String SEEK_POSITION = "Current Seek Postion";
+    private static final String SEEK_DURATION = "Current Song Duration";
 
     /** Method performs tasks when binding: MusicService to MainActivity **/
     @Override
@@ -73,6 +77,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 if(isSongPlaying()) {
                     pausePlay();
                 }
+                break;
+            case ACTION_SEEK_BAR:
+                broadcastSeekData();
+                break;
+            case ACTION_SEEK_TO:
+                seekPlay(intent.getIntExtra("SeekPosition",0));
                 break;
         }
         return START_NOT_STICKY;
@@ -175,6 +185,15 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         startForeground(NOTIFICATION_ID, notification);*/
     }
 
+    public void broadcastSeekData(){
+        long current = getSongPosition();
+        long duration = getSongDuration();
+        Intent broadcastSeekIntent = new Intent(PlayActivity.SEEK_BROADCAST_FILTER);
+        broadcastSeekIntent.putExtra(SEEK_POSITION,current);
+        broadcastSeekIntent.putExtra(SEEK_DURATION,duration);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastSeekIntent);
+    }
+
     /** Method that handles media control's pause button **/
     public void pausePlay(){
         mediaPlayer.pause();
@@ -191,11 +210,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         return mediaPlayer.isPlaying();
     }
 
-    /** Setter for songPosition **/
-    public void setSong(int songIndex){
-        songPosition = songIndex;
-    }
-
     /** Getter for songPosition **/
     public int getSongPosition(){
         return mediaPlayer.getCurrentPosition();
@@ -209,5 +223,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     /** Method that handles media control's seekBar **/
     public void seekPlay(int seekPosition){
         mediaPlayer.seekTo(seekPosition);
+    }
+
+    /** Setter for songPosition **/
+    public void setSong(int songIndex){
+        songPosition = songIndex;
     }
 }

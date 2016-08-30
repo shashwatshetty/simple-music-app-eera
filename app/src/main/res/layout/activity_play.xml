@@ -70,7 +70,7 @@
             <!-- Play Button -->
             <ImageButton
                 android:id="@+id/btnPlay"
-                android:src="@drawable/play_btn"
+                android:src="@drawable/play_btn_pressed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
@@ -96,5 +96,18 @@
                 android:background="@null"/>
         </LinearLayout>
     </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/songProgressBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="20dp"
+        android:thumb="@drawable/seek_thumb"
+        android:progressDrawable="@drawable/seekbar_remaining_layout"
+        android:layout_above="@id/player_footer_bg"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"/>
 
 </RelativeLayout>
