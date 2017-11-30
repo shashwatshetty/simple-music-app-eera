@@ -1,7 +1,5 @@
 package com.dreams.waking.oeuvre;
 
-import android.util.Log;
-
 /**
  * Created by Shashwat on 8/31/2016.
  */

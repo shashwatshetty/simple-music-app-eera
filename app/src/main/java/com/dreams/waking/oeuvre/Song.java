@@ -3,12 +3,11 @@ package com.dreams.waking.oeuvre;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * Created by Shashwat on 5/23/2016.
  */
-/** Class implements Serializable to get packaged in intent **/
+
+/** Class implements Parcelable to get packaged in intent **/
 public class Song implements Parcelable {
     private long id;
     private String title;
